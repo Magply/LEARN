@@ -1,10 +1,16 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify 
 import json
+import os
 
 app = Flask(__name__)
 
+# Ensure the data directory exists
+DATA_DIR = './data'
+if not os.path.exists(DATA_DIR):
+    os.makedirs(DATA_DIR)
+
 # Path to the file where user information will be stored
-FILE_PATH = './users.txt'
+FILE_PATH = os.path.join(DATA_DIR, 'users.txt')
 
 @app.route('/save_user', methods=['POST'])
 def save_user():

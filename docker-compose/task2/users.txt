@@ -1,2 +1,0 @@
-{"name": "Mariya", "surname": "Novikava", "email": "123@gmail.com"}
-{"name": "Vadim", "surname": "Pervyj", "email": "Vadim1@gmail.com"}

@@ -6,6 +6,7 @@ services:
       - "3000:3000"
     volumes:
       - .:/app  # Volume for storing the users.txt file
+      - ./data:/app/data # from users.txt
     restart: always  # Automatically restart the container in case of failure
 
 volumes:
