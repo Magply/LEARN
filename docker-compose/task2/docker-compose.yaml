@@ -1,0 +1,12 @@
+version: '3'
+services:
+  python-app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app  # Volume for storing the users.txt file
+    restart: always  # Automatically restart the container in case of failure
+
+volumes:
+  users_data:
