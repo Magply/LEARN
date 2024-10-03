@@ -1,0 +1,31 @@
+version: '3'
+services:
+  python-app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app  # Mount the app directory
+    environment:
+      DB_HOST: mysql-db  # The MySQL service name from docker-compose
+      DB_USER: ${MYSQL_USER}  # Environment variables for DB connection
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE}
+    depends_on:
+      - mysql-db  # Specify that this service depends on MySQL
+
+  mysql-db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql  # Store MySQL data on the local computer
+
+volumes:
+  db_data:
+
