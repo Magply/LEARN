@@ -1,31 +1,39 @@
-version: '3'
+version: '3.8'
+
 services:
+  mysql-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql  # Persist MySQL data
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u${MYSQL_USER} -p${MYSQL_PASSWORD}"]
+      interval: 10s           # Time between health checks
+      timeout: 5s             # Timeout for each health check
+      retries: 5              # Number of retries before marking the container as unhealthy
+      start_period: 30s       # Time to wait before starting the first health check after container startup
+
   python-app:
     build: .
     ports:
       - "3000:3000"
     volumes:
-      - .:/app  # Mount the app directory
-    environment:
-      DB_HOST: mysql-db  # The MySQL service name from docker-compose
-      DB_USER: ${MYSQL_USER}  # Environment variables for DB connection
-      DB_PASSWORD: ${MYSQL_PASSWORD}
-      DB_NAME: ${MYSQL_DATABASE}
+      - .:/app  # Volume for persisting application data
     depends_on:
-      - mysql-db  # Specify that this service depends on MySQL
-
-  mysql-db:
-    image: mysql:5.7
+      mysql-db:
+        condition: service_healthy  # Start the application only when MySQL is in a "healthy" state
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-    ports:
-      - "3306:3306"
-    volumes:
-      - db_data:/var/lib/mysql  # Store MySQL data on the local computer
+      DB_HOST: mysql-db
+      DB_NAME: ${MYSQL_DATABASE}
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+    restart: always  # Automatically restart the container in case of failure
 
 volumes:
   db_data:
-
